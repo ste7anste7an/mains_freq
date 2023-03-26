@@ -3,6 +3,8 @@ Measure frequency of the 240V mains
 
 ## Mosquitto server using docker-compose
 
+Set up a mosquitto server. this is descibed [here](https://medium.com/himinds/mqtt-broker-with-secure-tls-and-docker-compose-708a6f483c92). Generate certs using the script `generate_certs.sh`. Create a direcotry `./config` in the docker directory with a subdirectory `./config/certs`. Put the generated certs and keyfiles in the `./config/certs' folder.
+
 This is the docker compose-compose.yml file:
 ```
 services:
