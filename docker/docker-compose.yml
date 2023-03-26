@@ -1,0 +1,11 @@
+services:
+  mosquitto:
+    container_name: mosquitto_tls
+    image: eclipse-mosquitto:2
+    volumes:
+      - ./config/:/mosquitto/config/
+    ports:
+      - 9883:8883
+
+volumes:
+  data_mqtt: ~
