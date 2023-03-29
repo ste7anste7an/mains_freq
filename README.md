@@ -8,6 +8,8 @@ The frequency meter consists of two microcontroller boards. A Raspberry Pico Pi 
 
 The TASMOTA module is configured in Serial bridging mode. This bridges the serial input and putput to MQTT. 
 
+![Wire diagram frequency meter](images/mains_frequency_meter_bb.png)
+
 ### ZMPT101B
 This is a single phase transformer with an additional OPAMP to convert the transformed voltage between 0 and VCC, where VCC is an externally provided voltage. In out case, we use VCC=3.3V. The potentiometer is adjusted such that the output sine wave is well formed and not clipped. Using a small test programm running on Pico Pi, this adjustment can be tested using the Arduino Serial Plotter tool.
 
