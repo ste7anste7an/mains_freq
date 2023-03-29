@@ -140,20 +140,36 @@ void loop() {
 
 
 
-## Firmware
-### TASMOTA on ESP8266
+# Firmware
+## TASMOTA on ESP8266
 The firmware can be installed directly using [this web installer](https://tasmota.github.io/install/). Choose the 'tasmota TLS (English)' firmware for platform 'ESP8266'. 
 
 ![Flashig Tasmota](images/tasmota_web_install.jpg)
 
-After flashing the firmware, configure the unit as follows:
-
+Connect the Tasmota unit to your computer using a USB cable.
+After flashing the firmware (or resseting the configuaration, see next section), the unit will not be connected to a Wifi network. It will act as a Wifi base station with an SSID in this format: `tasmota-<MAC>_<number>. Connect to this Wifi network and configure the unit as follows:
+- Connect the Tasmota unit to your computer using a USB cable.
+- start an [online serial monitor](https://googlechromelabs.github.io/serial-terminal/) in the browser and connect to the serial port (try to find a serial port with CH340 in its name). Connect at 115200 baud.
+- browse to htpp://102.168.4.1
+ - select your Wifi network and insert the Wifi password.
+- when redirecting to the new IP address in your network fails, you can see the IP address in the serial output in a line like this:
+ ```  HTP: Web server active on tasmota-<MAC>-<number> with IP address 192.168.x.x```
+- browse to that IP address, or you will be redirected automaticaly.
+ 
+Ser this initial setting, or restore a backup file.
 - configuration -> Configure Module -> select `Generic (0)`. Save
 - Configuration -> Configure Module -> set `TX GPIO1` to `SerBr Tx` and set `RX GPIO3` to `SerBr Rx`. Save
 - Configuration -> Configure MQTT -> Check 'Use TLS' when using TLS, Enter `Host`, `Port`, `User` = mqtt username, `Password` = MQTT password 
 - Console -> In `Enter Command`, enter: `SetOption132 1`
 
-### Raspberry Pi Pico firmware
+ ## hard reset configuration
+ 
+ When you loose connectivitywith your Tasmota unit, you can hard reset its configuration following these steps:
+1. Cut power from the device completely for 30 seconds.
+2. Power the device on and off six times with intervals lower than 10 seconds and leave it on after seventh time.
+3. Fast power cycle device recovery should activate and the device should be reset to firmware defaults.
+ 
+## Raspberry Pi Pico firmware
 The firmware can be compiled using the Arduino IDE.
 
 When a new firmware is provided as an UF2 binary file (freq_pico_cmd.ino.rpipico.uf2), the procedure to flash the Pi Pico is as follows:
