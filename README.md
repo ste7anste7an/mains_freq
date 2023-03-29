@@ -1,5 +1,55 @@
-# mains_freq
-Measure frequency of the 240V mains
+# Frequency measurement
+## Principle
+
+![Determining the rasing zero crossing](images/sine_parameters.png)
+
+## Setting parameters
+
+A number of parameters can be set on the Pico Pi.
+
+| command | explanation |
+|---------|-------------|
+|get <var_name>	|		gets value of <var_name>|
+| set <var_name> <value>  |   sets <var_name> to value <value>|
+| readflash		|	reads the stored variables from EEPROM/flash|
+| writeflash	|		writes the variables to EEPROM/flash|
+
+ The following parameters are used:
+
+
+| parameter | explanation |
+|-----------|-------------|
+| us			|us_factor is the callibrated time of 1s in microseconds, (us = 1000000)|
+| a_off		|the offset that is subtracted from the A0 signal (the 0 crossing of the sine wave) (a_off = 500)|
+| a_min		|a negative offset to determine the raising edge (a_min = -50)|
+| a_max		|a positive offset to determine the raising edge (a_max = 50)|
+| alpha		|the smoothing factor in freq_smoothed = freq_smoothed * (1-alpha) + freq * alpha (alpha = 0.40)|
+| discard		|The factor used to discard outliers (discard = 1.0005)|
+| readflash	|indicates whether variables stored in EEPROM/flash are read at boot (readflash==1)|
+| flash_count |	counter indicating the number of times the flash was written, increases automatically with every flashwrite|
+
+These parameters can be read and written in 3 different ways:
+1. In the console by writing the following commands:
+```
+SSerialSend get <parameter>
+```
+or
+```
+SSerialSend set <parameter> <value>
+```
+2. By using MQTT publish command:
+```
+cmnd/tasmota_<MAC>/SSerialSend
+```
+and the raw string:
+```
+get <parameter>
+```
+or
+```
+set <parameter> <value>
+```
+3. 
 
 ## Electronics
 
@@ -39,6 +89,8 @@ void loop() {
 }
 
 ```
+
+
 
 ## Firmware
 ### TASMOTA on ESP8266
