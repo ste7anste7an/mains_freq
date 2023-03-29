@@ -73,7 +73,7 @@ http://192.168.2.100/cm?cmnd=sserialsend%20set%20a_min%20-55
 ```
 
 
-## adjusting parameters and storing parameters in flash memory
+## Storing parameters in flash memory
 
 The parameters can be adjusted using the commands show eralier. When the unit is rebooted, the parameters will et their default startup values. 
 
@@ -92,7 +92,7 @@ get flash_count
 ```
 You should see the the `flash_count` parameter increaded by 1. You can now check the values of the parameters using the `get <parameter>` command.
 
-### restoing to default values
+## Restoring to default values
 Using the following commands, you can restore the default parameters at boot (you prevent the unit from reading the parameters from flash):
 ```
 set readflash 0
