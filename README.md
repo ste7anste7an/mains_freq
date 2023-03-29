@@ -1,7 +1,21 @@
 # Frequency measurement
 ## Principle
+The frequency meter consists of two microcontroller boards. A Raspberry Pico Pi and an ESP8266 board. The Pico Pi is responsible for measuring the actual mains frequency. The values read are passed to the ESP8266 using a serial port running a 9600 baus. The ESP8266 is programmed with a TLS version of the TASMOTA firmware. The analogue output of the ZMPT101B module is connected to the ADC0 convertor of te Pico Pi. 
+
+The basic principle of the Mains Frequency meter is detetecting the zero crossings of the Alternate Voltage 50Hz signal.
+The Pico Pi determines the rasing zero crossings of the sine wave and counts 50 zero crossings. The time is measured using the internal micro seconds clock. From this measurement the mains frequency is derived. To smooth the output of the frequency measurements, a running average is taken using $freq = &alpha; freq_{meas} + (1-&alpha; ) freq$, with $freq_{meas}$ the raw measured value. 
+
+To prevent counting the zero crossing twice every 50Hz period, we only determine the zero crossing when a full period is detected. The 230V AC voltage is transformed down to a AC signal between 0 and 3 V. This signal is fed into the ADC of the Pico Pi. The average value $a_{off}$ is subtracted from the ADC reading. The parameers $a_{min}$ and $a_{max}$ are used to apply a hysteresis to the zero corossing detection. Now the time for detecting 50 periods $t_{50}$ is measured on a micro second scale. This time will be approximately 1 second. This is shown in de graph below
 
 ![Determining the rasing zero crossing](images/sine_parameters.png)
+
+The frequency is cacluated by:
+
+$f = us/(t_{50} / 50)$
+
+The frequency is adjusted by the parameter $us$ which is the number of microsecond counts in 1 second and is approximately $us=1000000$.
+
+
 
 ## Setting parameters
 
@@ -49,7 +63,41 @@ or
 ```
 set <parameter> <value>
 ```
-3. 
+3. Using the HTPP REST API
+```
+http://192.168.2.100/cm?cmnd=sserialsend%20get%20a_min
+```
+or
+```
+http://192.168.2.100/cm?cmnd=sserialsend%20set%20a_min%20-55
+```
+
+
+## adjusting parameters and storing parameters in flash memory
+
+The parameters can be adjusted using the commands show eralier. When the unit is rebooted, the parameters will et their default startup values. 
+
+On startup the parameter `readflash` is read from flash. If `readflash` is equal to 1, all the other parameters are read from flash memory. In order to store the current set of parameters in flash memory, issue the follwing commands:
+```
+set readflash 1
+set flash_count 1 (this is only needed when flash memory is used for the first time)
+writeflash
+```
+
+To check whether the parameters are correctly written to flash, you can reboot the unit (by disconnecting the power supply for a few seconds) and use these commands:
+```
+readflash
+get readflash
+get flash_count
+```
+You should see the the `flash_count` parameter increaded by 1. You can now check the values of the parameters using the `get <parameter>` command.
+
+### restoing to default values
+Using the following commands, you can restore the default parameters at boot (you prevent the unit from reading the parameters from flash):
+```
+set readflash 0
+writeflash
+```
 
 ## Electronics
 
@@ -94,7 +142,24 @@ void loop() {
 
 ## Firmware
 ### TASMOTA on ESP8266
-The firmware can be installed directly using [this web installer](https://tasmota.github.io/install/). Choose as platform
+The firmware can be installed directly using [this web installer](https://tasmota.github.io/install/). Choose the 'tasmota TLS (English)' firmware for platform 'ESP8266'. 
+
+![Flashig Tasmota](images/tasmota_web_install.jpg)
+
+After flashing the firmware, configure the unit as follows:
+
+- configuration -> Configure Module -> select `Generic (0)`. Save
+- Configuration -> Configure Module -> set `TX GPIO1` to `SerBr Tx` and set `RX GPIO3` to `SerBr Rx`. Save
+- Configuration -> Configure MQTT -> Check 'Use TLS' when using TLS, Enter `Host`, `Port`, `User` = mqtt username, `Password` = MQTT password 
+- Console -> In `Enter Command`, enter: `SetOption132 1`
+
+### Raspberry Pi Pico firmware
+The firmware can be compiled using the Arduino IDE.
+
+When a new firmware is provided as an UF2 binary file (freq_pico_cmd.ino.rpipico.uf2), the procedure to flash the Pi Pico is as follows:
+- open the casing
+- do not plug the unit in the Mains Power!
+- Connect the Pico Pi with your computer (using an USB-C cable). While keeping the `BOOT` botton on the Pico Pi pressed, briefly press the `RST` button. The Pico Pi is now in bootloader mode and a mass storage device will show up in your computer. Copy the `.UF2` file to the this mass storage device.
 
 ## Mosquitto server using docker-compose
 
