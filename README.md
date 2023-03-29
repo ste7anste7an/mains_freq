@@ -4,12 +4,39 @@ Measure frequency of the 240V mains
 ## Electronics
 
 ### Main design
-The frequency meter consists of two microcontroller boards. A Raspberry Pico Pi and an ESP8266 board. The pico pi is responsible for doing the actual frequency measurement. The ESP8266 is programmed with a TLS version of the TASMOTA firmware. The anaolgue output of the ZMPT101B module is connected to the ADC0 convertor of te Pico Pi. The Pico Pi determines the rasing zero crossings of the sine wave and counts 50 zero crossings. The time is measured using the internal micro seconds clock. From this measurement the mains frequency is derived. To smooth the output of the frequency measurements, a running average is taken using $freq = &alpha; freq_m + (1-&alpha; ) freq$ 
+The frequency meter consists of two microcontroller boards. A Raspberry Pico Pi and an ESP8266 board. The pico pi is responsible for doing the actual frequency measurement. The ESP8266 is programmed with a TLS version of the TASMOTA firmware. The anaolgue output of the ZMPT101B module is connected to the ADC0 convertor of te Pico Pi. The Pico Pi determines the rasing zero crossings of the sine wave and counts 50 zero crossings. The time is measured using the internal micro seconds clock. From this measurement the mains frequency is derived. To smooth the output of the frequency measurements, a running average is taken using $freq = &alpha; freq_{meas} + (1-&alpha; ) freq$, with $freq_{meas}$ the raw measured value. 
 
-output of the analo
+The TASMOTA module is configured in Serial bridging mode. This bridges the serial input and putput to MQTT. 
 
 ### ZMPT101B
-This is a single phase transformer with an additional OPAMP to convert the transformed voltage between 0 and VCC, where VCC is an externally provided voltage. In out case, we use VCC=3.3V. The potentiometer is adjusted sunch that the output sine waved is well formed and not clipped. Using a small test programm running on
+This is a single phase transformer with an additional OPAMP to convert the transformed voltage between 0 and VCC, where VCC is an externally provided voltage. In out case, we use VCC=3.3V. The potentiometer is adjusted such that the output sine wave is well formed and not clipped. Using a small test programm running on Pico Pi, this adjustment can be tested using the Arduino Serial Plotter tool.
+
+```
+int store[1000];
+int t[1000];
+int m;
+void setup() {
+  Serial.begin(115200);
+  m=micros();
+  delay(1000);
+  for (int i = 0; i < 1000; i++) {
+    store[i] = analogRead(A0);// -700;
+    t[i]=micros()-m;
+    delayMicroseconds(5);
+  }
+  delay(3000); // wait until USB CDC serial ports is initialized
+  for (int i = 0; i < 1000; i++) {
+    Serial.print(t[i]);
+    Serial.print(",");
+    Serial.println(store[i]);
+  }
+
+}
+
+void loop() {
+}
+
+```
 
 ## Firmware
 ### TASMOTA on ESP8266
