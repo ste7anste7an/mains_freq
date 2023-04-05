@@ -15,7 +15,9 @@ $f = us/(t_{50} / 50)$
 
 The frequency is adjusted by the parameter $us$ which is the number of microsecond counts in 1 second and is approximately $us=1000000$.
 
+## Tasmota configuration
 
+When resetting the configuration of the tasmota module, a 
 
 ## Setting parameters
 
@@ -161,6 +163,7 @@ Ser this initial setting, or restore a backup file.
 - Configuration -> Configure Module -> set `TX GPIO1` to `SerBr Tx` and set `RX GPIO3` to `SerBr Rx`. Save
 - Configuration -> Configure MQTT -> Check 'Use TLS' when using TLS, Enter `Host`, `Port`, `User` = mqtt username, `Password` = MQTT password 
 - Console -> In `Enter Command`, enter: `SetOption132 1`
+- Condole -> In `Enter Commnad`, enter: `mqttfingerprint 0` to reset the TLS fingerprint. The first time a TLS connection is made to the MQTT broker, the fingerprint is set. Whenever the certificates of the MQTT broker are changed, you need to reset the fingerprint.
 
  ## hard reset configuration
  
