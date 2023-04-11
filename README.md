@@ -17,7 +17,7 @@ The frequency is adjusted by the parameter $us$ which is the number of microseco
 
 ## Tasmota configuration
 
-When resetting the configuration of the tasmota module, a 
+When resetting the configuration of the tasmota module a Wifi network will become active with an SSID in the form of `tasmota_<mac>`. Connect to this Wifi station and browse to `192.168.4.1`. A GUI will be shown that allows you to select a Wifi network and where a network password can be provided. 
 
 ## Setting parameters
 
